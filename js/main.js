@@ -9,8 +9,8 @@ async function main() {
     _page: 1,
     _limit: 5,
   }
-  const respone = await postApi.getAll(queryParams)
-  console.log('posts: ', respone)
+  const data = await postApi.getAll(queryParams)
+  console.log('posts data : ', data)
 }
 
 main()
