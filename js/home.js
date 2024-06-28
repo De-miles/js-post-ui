@@ -1,10 +1,10 @@
 import axiosClient from './api/axiosClient.js'
 import postApi from './api/postApi.js'
 import { setTextContent, truncateText } from './utils'
-// import dayjs from 'dayjs'
-// import relativeTime from 'dayjs/plugin/relativeTime'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 // to user fromNow() func
-// dayjs.extend(relativeTime)
+dayjs.extend(relativeTime)
 
 function createPostElement(post) {
   if (!post) return
@@ -29,7 +29,7 @@ function createPostElement(post) {
 
   // calculate timespan
   // console.log('timespan', dayjs(post.updatedAt).fromNow())
-  // setTextContent(liElement, '[data-id="timeSpan"]', `- ${dayjs(post.updatedAt).fromNow()}`)
+  setTextContent(liElement, '[data-id="timeSpan"]', `- ${dayjs(post.updatedAt).fromNow()}`)
 
   const thumbnailElement = liElement.querySelector('[data-id="thumbnail"]')
   if (thumbnailElement) {
