@@ -3,6 +3,7 @@ import postApi from './api/postApi.js'
 
 async function main() {
   // const respone = await axiosClient.get('/posts')
+  console.log('whyyyy')
   try {
     const queryParams = {
       _page: 1,
