@@ -1,5 +1,5 @@
-import axiosClient from './api/axiosClient'
-import postApi from './api/postApi'
+import axiosClient from './api/axiosClient.js'
+import postApi from './api/postApi.js'
 
 async function main() {
   // const respone = await axiosClient.get('/posts')

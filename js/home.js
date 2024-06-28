@@ -1,5 +1,5 @@
-import axiosClient from './api/axiosClient'
-import postApi from './api/postApi'
+import axiosClient from './api/axiosClient.js'
+import postApi from './api/postApi.js'
 import { setTextContent, truncateText } from './utils'
 // import dayjs from 'dayjs'
 // import relativeTime from 'dayjs/plugin/relativeTime'
