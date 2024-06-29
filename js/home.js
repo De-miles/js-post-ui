@@ -1,6 +1,6 @@
 import axiosClient from './api/axiosClient.js'
 import postApi from './api/postApi.js'
-import { setTextContent, truncateText } from './utils'
+import { getUlPagination, setTextContent, truncateText } from './utils'
 // to use fromNow() func
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -50,6 +50,9 @@ function renderPostList(postList) {
   const ulElement = document.getElementById('postList')
   if (!ulElement) return
 
+  // clear current list
+  ulElement.textContent = ''
+
   postList.forEach((post) => {
     const liElement = createPostElement(post)
     ulElement.appendChild(liElement)
@@ -57,7 +60,7 @@ function renderPostList(postList) {
 }
 
 function renderPagination(pagination) {
-  const ulPagination = document.getElementById('pagination')
+  const ulPagination = getUlPagination()
   if (!pagination || !ulPagination) return
 
   // calc totalPages
@@ -76,29 +79,52 @@ function renderPagination(pagination) {
   else ulPagination.lastElementChild?.classList.remove('disabled')
 }
 
-function handleFilterChange(filterName, filterValue) {
-  // update query params
-  const url = new URL(window.location)
-  url.searchParams.set(filterName, filterValue)
-  history.pushState({}, '', url)
+async function handleFilterChange(filterName, filterValue) {
+  try {
+    // update query params
+    const url = new URL(window.location)
+    url.searchParams.set(filterName, filterValue)
+    history.pushState({}, '', url)
 
-  // fetch API
-  // re-render post list
+    // fetch API
+    const { data, pagination } = await postApi.getAll(url.searchParams)
+    // re-render post list
+    renderPostList(data)
+    renderPagination(pagination)
+  } catch (error) {
+    console.log('failed to fetch post list', error)
+  }
 }
 
 function handlePrevLink(e) {
   e.preventDefault()
-  console.log('prev click')
+
+  const ulPagination = getUlPagination()
+  if (!ulPagination) return
+
+  const page = Number.parseInt(ulPagination.dataset.page) || 1
+  if (page <= 1) return
+
+  handleFilterChange('_page', page - 1)
 }
 
 function handleNextLink(e) {
   e.preventDefault()
-  console.log('next click')
+
+  const ulPagination = getUlPagination()
+  if (!ulPagination) return
+
+  const page = Number.parseInt(ulPagination.dataset.page) || 1
+  const totalPages = ulPagination.dataset.totalPages
+
+  if (page >= totalPages) return
+
+  handleFilterChange('_page', page + 1)
 }
 
 function initPagination() {
   // bind click event for pre/next link
-  const ulPagination = document.getElementById('pagination')
+  const ulPagination = getUlPagination()
   if (!ulPagination) return
 
   // add click event for prev link
