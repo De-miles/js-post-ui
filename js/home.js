@@ -1,9 +1,9 @@
 import axiosClient from './api/axiosClient.js'
 import postApi from './api/postApi.js'
 import { setTextContent, truncateText } from './utils'
+// to use fromNow() func
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-// to user fromNow() func
 dayjs.extend(relativeTime)
 
 function createPostElement(post) {
@@ -56,12 +56,60 @@ function renderPostList(postList) {
   })
 }
 
+function handleFilterChange(filterName, filterValue) {
+  // update query params
+  const url = new URL(window.location)
+  url.searchParams.set(filterName, filterValue)
+  history.pushState({}, '', url)
+
+  // fetch API
+  // re-render post list
+}
+
+function handlePrevLink(e) {
+  e.preventDefault()
+  console.log('prev click')
+}
+
+function handleNextLink(e) {
+  e.preventDefault()
+  console.log('next click')
+}
+
+function initPagination() {
+  // bind click event for pre/next link
+  const ulPagination = document.getElementById('pagination')
+  if (!ulPagination) return
+
+  // add click event for prev link
+  const prevLink = ulPagination.firstElementChild?.firstElementChild
+  if (prevLink) {
+    prevLink.addEventListener('click', handlePrevLink)
+  }
+
+  // add click event for next link
+  const nextLink = ulPagination.lastElementChild?.lastElementChild
+  if (nextLink) {
+    nextLink.addEventListener('click', handleNextLink)
+  }
+}
+
+function initURL() {
+  const url = new URL(window.location)
+
+  // update search params if needed
+  if (!url.searchParams.get('_page')) url.searchParams.set('_page', 1)
+  if (!url.searchParams.get('_limit')) url.searchParams.set('_limit', 6)
+
+  history.pushState({}, '', url)
+}
+
 ;(async () => {
   try {
-    const queryParams = {
-      _page: 1,
-      _limit: 6,
-    }
+    initPagination()
+    initURL()
+
+    const queryParams = new URLSearchParams(window.location.search)
     const { data, pagination } = await postApi.getAll(queryParams)
     renderPostList(data)
   } catch (error) {
