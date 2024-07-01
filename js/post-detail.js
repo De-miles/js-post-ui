@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import postApi from './api/postApi'
-import { setTextContent } from './utils'
+import { registerLightBox, setTextContent } from './utils'
 
 function renderPostDetail(post) {
   if (!post) return
@@ -33,6 +33,8 @@ function renderPostDetail(post) {
 }
 
 ;(async () => {
+  registerLightBox()
+
   // get post id from URL
   // fetch post detail API
   // render post detail
