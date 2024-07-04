@@ -1,5 +1,4 @@
 import { setBackgroundImage, setFieldValue, setTextContent } from './common'
-import * as yup from 'yup'
 
 function setFormValues(form, formValues) {
   setFieldValue(form, '[name="title"]', formValues?.title)
@@ -27,53 +26,34 @@ function getFormValues(form) {
   return formValues
 }
 
-function getPostSchema() {
-  return yup.object().shape({
-    title: yup.string().required('Please enter title'),
-    author: yup
-      .string()
-      .required('Please enter author')
-      .test(
-        'at-least-two-words',
-        'Please enter at least two words',
-        (value) => value.split(' ').filter((x) => !!x && x.length >= 3).length >= 2,
-      ),
-    description: yup.string(),
-  })
-}
-
-function setFieldError(form, name, error) {
-  const element = form.querySelector(`[name="${name}"]`)
-  if (element) {
-    element.setCustomValidity(error)
-    setTextContent(element.parentElement, '.invalid-feedback', error)
+function getTitleError(form) {
+  const titleElement = form.querySelector('[name="title"]')
+  if (!titleElement) return
+  // required
+  if (titleElement.validity.valueMissing) return 'Please enter title.'
+  // at least two words
+  if (titleElement.value.split(' ').filter((x) => !!x && x.length >= 3).length < 2) {
+    return 'Please enter at least two words of 3 characters'
   }
+
+  return ''
 }
 
-async function validatePostForm(form, formValues) {
-  try {
-    // reset previous errors
-    ;['title', 'author'].forEach((name) => setFieldError(form, name, ''))
-
-    // start validating
-    const schema = getPostSchema()
-    await schema.validate(formValues, { abortEarly: false })
-  } catch (error) {
-    console.log(error.name)
-    console.log(error.inner)
-    const errorLog = {}
-    if (error.name === 'ValidationError' && Array.isArray(error.inner)) {
-      for (const validationError of error.inner) {
-        const name = validationError.path
-        // ignore if the field is already logged
-        if (errorLog[name]) continue
-        // set field error and mark as logged
-        setFieldError(form, name, validationError.message)
-        errorLog[name] = true
-      }
+function validatePostForm(form, formValues) {
+  // get errors
+  const errors = {
+    title: getTitleError(form),
+    // author: getAuthorError(form),
+    // ...
+  }
+  // set errors
+  for (const key in errors) {
+    const element = form.querySelector(`[name="${key}"]`)
+    if (element) {
+      element.setCustomValidity(errors[key])
+      setTextContent(element.parentElement, '.invalid-feedback', errors[key])
     }
   }
-
   // add was-validated class to form element
   const isValid = form.checkValidity()
   if (!isValid) form.classList.add('was-validated')
