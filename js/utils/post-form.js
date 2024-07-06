@@ -58,7 +58,12 @@ function getPostSchema() {
       then: () =>
         yup
           .mixed()
-          .test('required', 'Please select an image to upload', (value) => Boolean(value?.name)),
+          .test('required', 'Please select an image to upload', (file) => Boolean(file?.name))
+          .test('max-3mb', 'The image is too large (max 3mb)', (file) => {
+            const fileSize = file?.size || 0
+            const MAX_SIZE = 3 * 1024 * 1024 // 3 mb
+            return fileSize <= MAX_SIZE
+          }),
     }),
   })
 }

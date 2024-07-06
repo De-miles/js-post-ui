@@ -1,7 +1,25 @@
 import postApi from './api/postApi'
 import { initPostForm, toast } from './utils'
 
+function removeUnusedFields(formValues) {
+  const payload = { ...formValues }
+
+  if (payload.imageSource === 'upload') {
+    delete payload.imageUrl
+  } else {
+    delete payload.image
+  }
+
+  delete payload.imageSource
+
+  return payload
+}
+
 async function handlePostFormSubmit(formValues) {
+  const payload = removeUnusedFields(formValues)
+  console.log('submit from parent', { formValues, payload })
+  return
+
   try {
     // check add/edit mode
     // S1: based on search params(check id)
